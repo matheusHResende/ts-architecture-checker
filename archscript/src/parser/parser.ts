@@ -1,6 +1,6 @@
-import { readFileSync, readFile as rf, Dir } from "fs"
-import { Importation } from "./importation";
-import { Component } from "./component";
+import { readFileSync } from "fs"
+import { Importation } from "../project/importation";
+import { Component } from "../project/component";
 import ts from "typescript";
 
 function printRecursiveFrom(
@@ -50,7 +50,7 @@ class Parser {
         function isExported(node: ts.Node): boolean {
             let exported = false
             node.forEachChild(child => {
-                if(child.kind === ts.SyntaxKind.ExportKeyword){
+                if (child.kind === ts.SyntaxKind.ExportKeyword) {
                     exported = true
                 }
             })
@@ -61,7 +61,7 @@ class Parser {
             let importedModule = ""
             let namedImports: Array<string> = []
             function parseImportation(child: ts.Node) {
-                switch(child.kind) {
+                switch (child.kind) {
                     case ts.SyntaxKind.StringLiteral:
                         importedModule = child.getText()
                         break
@@ -75,7 +75,7 @@ class Parser {
             node.forEachChild(parseImportation)
             return new Importation(module, importedModule, namedImports)
         }
-        
+
         function getType(node: ts.Node): string {
             let type: string = "any"
             node.forEachChild(child => {

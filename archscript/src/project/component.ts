@@ -1,4 +1,4 @@
-class Component {
+export class Component {
     module: string
     identifier: string
     kind: string
@@ -20,5 +20,3 @@ class Component {
         this.globalIdentifier = `${this.module}.${[...this.namespace, this.identifier].join(".")}`
     }
 }
-
-export { Component }

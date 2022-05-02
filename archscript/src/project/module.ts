@@ -1,15 +1,15 @@
-import { Parser } from "./parser"
+import { Parser } from "../parser/parser"
 import { Component } from "./component"
 import { Importation } from "./importation"
 
-class Module {
+export class Module {
     name: string
     package: string
     filePath: string
     symbols: Component[]
     importations: Importation[]
 
-    referedRules: string[]
+    referedRule: string
 
     constructor(filePath: string, basePath: string) {
         this.filePath = filePath
@@ -20,7 +20,7 @@ class Module {
         splitedPath.push("")
         this.package = splitedPath.join('/')
 
-        this.referedRules = []
+        this.referedRule = ""
     }
 
     parse() {
@@ -33,11 +33,7 @@ class Module {
         return this.importations.filter(importation => importation.internalDependency).map(importation => importation.absolutePath)
     }
 
-
-
     getExportedComponents(): Array<Component> {
         return this.symbols.filter(component => component.exported)
     }
 }
-
-export { Module }
