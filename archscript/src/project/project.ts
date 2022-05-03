@@ -75,8 +75,9 @@ export class Project {
         })
 
         dependencies.forEach((value, key, arr) => {
-            arr.set(key, [...new Set(value)])
+            arr.set(key, [...new Set(value)].filter(dependency => dependency != key))
         })
+
 
         return dependencies
     }

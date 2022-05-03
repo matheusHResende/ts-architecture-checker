@@ -4,6 +4,8 @@ import { GraphRepresentation } from "../visualizer/GraphRepresentation";
 import { Project } from "../project/project"
 // import { Rules } from "./Rules";
 
+import { parse } from "../parser/ParserN"
+
 export class Archscript {
     project: Project
     rules: Ruler
@@ -20,9 +22,11 @@ export class Archscript {
         //     new Parser(`${this.project.codePath}/${file}`)
         //         .run(file.replace(".ts", "")))
 
-        const drifts = this.rules.getDrifts()
-        drifts.forEach(drift => console.log(`${drift}`))
-        const dependencies = this.project.getModulesDependencies()
-        new GraphRepresentation(dependencies, drifts.map(drift => [drift.module, drift.targetModule])).render(output)
+        this.project.files.forEach(file => parse(file))
+
+        // const drifts = this.rules.getDrifts()
+        // drifts.forEach(drift => console.log(`${drift}`))
+        // const dependencies = this.project.getModulesDependencies()
+        // new GraphRepresentation(dependencies, drifts.map(drift => [drift.module, drift.targetModule])).render(output)
     }
 }
