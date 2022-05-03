@@ -3,7 +3,7 @@ export class Component {
     identifier: string
     kind: string
     type?: string
-    namespace: Array<string>
+    namespace: string[]
     globalIdentifier: string
     exported: boolean
 
@@ -16,7 +16,7 @@ export class Component {
         this.globalIdentifier = ""
     }
 
-    defineGlobalIdentifier() {
+    defineGlobalIdentifier(): void {
         this.globalIdentifier = `${this.module}.${[...this.namespace, this.identifier].join(".")}`
     }
 }

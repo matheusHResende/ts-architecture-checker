@@ -17,16 +17,23 @@ export class Archscript {
         this.rules = new Ruler(rulePath, this.project)
     }
 
-    run(output: string) {
+    run(output: string = "output.png"): void {
         // this.project.files.forEach(file =>
         //     new Parser(`${this.project.codePath}/${file}`)
         //         .run(file.replace(".ts", "")))
+        const codePath = this.project.codePath
+        // this.project.files.forEach(file => parse(`${codePath}${file}`))
 
-        this.project.files.forEach(file => parse(file))
+        const drifts = this.rules.getDrifts()
+        drifts.forEach(drift => console.log(`${drift}`))
+        const dependencies = this.project.getModulesDependencies()
+        new GraphRepresentation(dependencies, drifts.map(drift => [drift.module, drift.targetModule])).render(output)
+    }
 
-        // const drifts = this.rules.getDrifts()
-        // drifts.forEach(drift => console.log(`${drift}`))
-        // const dependencies = this.project.getModulesDependencies()
-        // new GraphRepresentation(dependencies, drifts.map(drift => [drift.module, drift.targetModule])).render(output)
+    runExtended(output: string = "output.png"): void {
+        const drifts = this.rules.getDrifts()
+        drifts.forEach(drift => console.log(`${drift}`))
+        const dependencies = this.project.getDependencies()
+        new GraphRepresentation(dependencies, drifts.map(drift => [drift.file, drift.targetFile])).render(output)
     }
 }

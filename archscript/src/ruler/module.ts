@@ -26,7 +26,7 @@ export class Module {
         return expandableNames
     }
 
-    isValid(modules: string[]) {
+    isValid(modules: string[]): boolean {
         const rules = [this.allowed, this.forbidden, this.required]
         for (const rule of rules) {
             if (rule != undefined) {

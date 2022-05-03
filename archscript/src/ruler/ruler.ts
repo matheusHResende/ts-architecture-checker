@@ -26,7 +26,7 @@ export class Ruler {
         this.ruleSet.forEach(module => this.ruleModules.set(module.name, module))
     }
 
-    simplify() {
+    simplify(): void {
         const available = this.project.modules.map(module => module.name)
         this.ruleSet.forEach(rule => rule.simplify(available))
     }
@@ -76,7 +76,7 @@ export class Ruler {
         return drifts
     }
 
-    matchModules() {
+    matchModules(): void {
         this.ruleSet.forEach(module => module.files.forEach(file => {
             const tsModule = this.projectModules.get(file)
             if (tsModule == undefined) return
@@ -84,11 +84,11 @@ export class Ruler {
         }))
     }
 
-    setProjectModules() {
+    setProjectModules(): void {
         this.project.modules.forEach(module => this.projectModules.set(module.name, module))
     }
 
-    expandRules() {
+    expandRules(): void {
         const expandableNames = new Set<string>()
         this.ruleSet.forEach(module => {
             module.getExpandableNames().forEach(name => expandableNames.add(name))

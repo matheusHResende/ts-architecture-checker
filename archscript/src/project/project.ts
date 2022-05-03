@@ -36,7 +36,7 @@ export class Project {
         this.modules = this.files.map(file => new Module(`${this.codePath}${file}`, this.codePath))
     }
 
-    parse() {
+    parse(): void {
         if (!this.parsed) {
             this.modules?.forEach(module => module.parse())
             this.parsed = true
@@ -65,13 +65,14 @@ export class Project {
 
         this.modules.forEach(module => {
             const d: string[] = []
+            console.log(module.referedRule)
             module.getDependencies().forEach(dependency => {
-                const r = modules.get(dependency)
+                const r = modules.get(dependency)?.referedRule
                 if (r == undefined) return
-                d.push(r.referedRule)
+                d.push(r)
             })
-            dependencies.set(module.referedRule, d)
-
+            const old = dependencies.get(module.referedRule)
+            dependencies.set(module.referedRule, old != undefined ? [...old, ...d] : d)
         })
 
         dependencies.forEach((value, key, arr) => {

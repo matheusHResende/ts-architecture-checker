@@ -23,7 +23,7 @@ export class Module {
         this.referedRule = ""
     }
 
-    parse() {
+    parse(): void {
         let [symbols, importations] = new Parser(this.filePath).run(this.name)
         this.symbols = symbols
         this.importations = importations

@@ -21,7 +21,7 @@ export class GraphRepresentation extends Representation {
         })
     }
 
-    async render(fileName: string) {
+    render(fileName: string): void {
         const r = CliRenderer({ outputFile: fileName, format: "png" });
         (async () => {
             try {
