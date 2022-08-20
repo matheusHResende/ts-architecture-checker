@@ -1,5 +1,4 @@
 import { Archscript } from "./archscript/Archscript"
-import "command-line-args"
 
 function main() {
     const optionsDefinition = [

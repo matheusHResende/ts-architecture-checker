@@ -7,5 +7,6 @@ export class MatrixRepresentation extends Representation {
 
     render(fileName: string) {
         console.log("renderging matrix...")
+        return "strings"
     }
 }

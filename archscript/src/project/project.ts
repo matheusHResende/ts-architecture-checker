@@ -65,7 +65,6 @@ export class Project {
 
         this.modules.forEach(module => {
             const d: string[] = []
-            console.log(module.referedRule)
             module.getDependencies().forEach(dependency => {
                 const r = modules.get(dependency)?.referedRule
                 if (r == undefined) return

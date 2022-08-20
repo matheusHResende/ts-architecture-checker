@@ -14,6 +14,12 @@ function printRecursiveFrom(
     );
 }
 
+function walk(classNode: ts.ClassDeclaration) {
+    console.log("########### WALKER ###########")
+    console.log("Class Name:", classNode.name?.text)
+    console.log(classNode.members.forEach(member => console.log(member.name?.getText())))
+}
+
 class Parser {
     namespace: Array<string>
     sourceFile: ts.SourceFile
@@ -133,6 +139,7 @@ class Parser {
                     break
                 case ts.SyntaxKind.ClassDeclaration:
                     component.kind = "class"
+                    walk(node as ts.ClassDeclaration)
                     break
                 case ts.SyntaxKind.InterfaceDeclaration:
                     component.kind = "interface"

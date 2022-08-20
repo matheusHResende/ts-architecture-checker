@@ -1,6 +1,8 @@
 import { Parser } from "../parser/parser"
 import { Component } from "./component"
 import { Importation } from "./importation"
+import { parse } from '../parser/ParserN'
+
 
 export class Module {
     name: string
@@ -24,9 +26,11 @@ export class Module {
     }
 
     parse(): void {
-        let [symbols, importations] = new Parser(this.filePath).run(this.name)
-        this.symbols = symbols
-        this.importations = importations
+        //let [symbols, importations] = new Parser(this.filePath).run(this.name)
+        // this.symbols = symbols
+        // this.importations = importations
+
+        parse(this.filePath)
     }
 
     getDependencies(): string[] {

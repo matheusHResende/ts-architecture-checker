@@ -3,6 +3,19 @@ import { Representation } from "./Representation"
 import { CliRenderer } from "@diagrams-ts/graphviz-cli-renderer"
 
 
+interface Foo {
+    variable: number
+    callable(a: number): number
+}
+
+interface Bar {
+
+}
+
+class FooBar {
+
+}
+
 export class GraphRepresentation extends Representation {
     graph: Digraph
 
