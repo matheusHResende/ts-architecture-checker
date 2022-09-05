@@ -1,5 +1,6 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { corrigir_csv } from "../leitor/csv"
 
 export function run() {
     yargs(hideBin(process.argv))

@@ -1,0 +1,19 @@
+{
+  "ABSENCES": [
+    {
+      "targetFile": "/home/matheushenriquecarvalhodepaivare/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
+      "originModule": "cli",
+      "targetModule": "leitor"
+    }
+  ],
+  "DIVERGENCES": [
+    {
+      "line": 2,
+      "kind": "importation",
+      "originFile": "/home/matheushenriquecarvalhodepaivare/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
+      "targetFile": "/home/matheushenriquecarvalhodepaivare/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/models/prova.ts",
+      "originModule": "cli",
+      "targetModule": "models"
+    }
+  ]
+}

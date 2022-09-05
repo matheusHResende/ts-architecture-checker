@@ -23,7 +23,7 @@ function mapFileToModule(rules: Map<string, Module>): Map<string, string> {
     return fileToModule
 }
 
-export function check(symbols: TypeScriptModule[], rules: Map<string, Module>) {
+export function check(symbols: TypeScriptModule[], rules: Map<string, Module>): Report {
     const fileToModule = mapFileToModule(rules)
     let occurrencies: Report = {
         divergencies: [],
@@ -43,10 +43,7 @@ export function check(symbols: TypeScriptModule[], rules: Map<string, Module>) {
         }
         occurrencies = verify(file, actualRule, fileToModule, occurrencies)
     })
-    console.log(occurrencies.absences)
-    console.log(occurrencies.divergencies)
-    // Check if the dependency is allowed
-    // Required constraint is solved
+    return occurrencies
 }
 
 function verify(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {

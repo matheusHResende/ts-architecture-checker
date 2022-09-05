@@ -1,60 +1,23 @@
 {
-    "commands": {
-        "files": [
-            "./src/cli/commands/*"
-        ],
-        "allowed": [
-            "leitor"
-        ],
-        "required": [
-            "leitor"
-        ]
-    },
     "cli": {
-        "files": [
-            "./src/cli/*"
-        ]
+      "files": ["./src/cli/**"],
+      "allowed": ["leitor"],
+      "required": ["leitor"]
     },
     "corretor": {
-        "files": [
-            "./src/corretor/*"
-        ],
-        "forbidden": [
-            "commands",
-            "cli"
-        ]
+        "files": ["./src/corretor/*"],
+      "forbidden": ["commands", "cli" ]
     },
     "estatisticas": {
-        "files": [
-            "./src/estatisticas/*"
-        ],
-        "allowed": [
-            "models"
-        ]
+      "files": ["./src/estatisticas/*"],
+      "allowed": ["models"]
     },
     "leitor": {
-        "files": [
-            "./src/leitor/*"
-        ],
-        "allowed": [
-            "corretor",
-            "models"
-        ],
-        "required": [
-            "corretor"
-        ]
+      "files": ["./src/leitor/*"],
+      "allowed": ["corretor","models"],
+      "required": ["corretor"]
     },
     "models": {
-        "files": [
-            "./src/models/*"
-        ]
-    },
-    "visualizacao": {
-        "files": [
-            "./src/visualizacao/*"
-        ],
-        "allowed": [
-            "models"
-        ]
+      "files": ["./src/models/*"]
     }
-}
+  }
