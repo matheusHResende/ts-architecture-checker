@@ -1,4 +1,4 @@
-import { Avaliacao } from "../models/avaliacao";
+import { Avaliacao } from "../modelos/avaliacao";
 
 function calcularMediaTurma(avaliacao: Avaliacao) {
     let media = 0

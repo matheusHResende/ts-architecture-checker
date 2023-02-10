@@ -1,4 +1,4 @@
-import { Avaliacao } from "../models/avaliacao"
+import { Avaliacao } from "../modelos/avaliacao"
 import { calcular } from "../estatisticas/avaliacao"
 
 export function corrigir(avaliacao: Avaliacao) {

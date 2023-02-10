@@ -1,5 +1,5 @@
 import { corrigir } from "../corretor/corretor"
-import { Prova } from "../models/prova"
+import { Prova } from "../modelos/prova"
 import { readFileSync } from "fs"
 
 export function corrigir_csv(arquivoProva: string, arquivoGabarito: string, turma?: string, headers?: boolean) {

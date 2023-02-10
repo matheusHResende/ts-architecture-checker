@@ -1,5 +1,5 @@
 import { Arguments, CommandBuilder } from "yargs";
-import { Prova } from "../../models/prova"
+import { Prova } from "../../modelos/prova"
 
 interface Options {
     prova: string

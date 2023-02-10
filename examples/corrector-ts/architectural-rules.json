@@ -1,18 +1,13 @@
 {
-    "Commands": {
+    "CLI": {
         "files": [
-            "./src/cli/commands/*"
+            "./src/cli/**"
         ],
         "allowed": [
             "Leitor"
         ],
         "required": [
             "Leitor"
-        ]
-    },
-    "CLI": {
-        "files": [
-            "./src/cli/*"
         ]
     },
     "Corretor": {
@@ -29,7 +24,7 @@
             "./src/estatisticas/*"
         ],
         "allowed": [
-            "Models"
+            "Modelos"
         ]
     },
     "Leitor": {
@@ -38,23 +33,22 @@
         ],
         "allowed": [
             "Corretor",
-            "Models"
+            "Modelos",
+            "Utils"
         ],
         "required": [
             "Corretor"
         ]
     },
-    "Models": {
+    "Modelos": {
         "files": [
-            "./src/models/*"
+            "./src/modelos/*"
         ]
     },
-    "Visualizacao": {
+    "Utils": {
         "files": [
-            "./src/visualizacao/*"
+            "./src/utils/**"
         ],
-        "allowed": [
-            "Models"
-        ]
+        "allowed": []
     }
 }
