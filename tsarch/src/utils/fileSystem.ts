@@ -1,4 +1,4 @@
-import { lstatSync, readdirSync, writeFileSync } from "fs"
+import { lstatSync, readdirSync, writeFileSync, existsSync } from "fs"
 import { resolve, sep } from "path"
 
 function getFiles(path: string): Array<string> {
@@ -33,6 +33,10 @@ function makeAbsolute(newReference: string, files: string[]): string[] {
 
 export function writeJSON(object: Object, fileName: string) {
     writeFileSync(fileName, JSON.stringify(object, null, 2), "utf-8")
+}
+
+export function existFile(filePath: string): boolean {
+    return existsSync(filePath)
 }
 
 export { getFiles, toAbsolute, makeAbsolute }

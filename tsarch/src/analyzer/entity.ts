@@ -1,6 +1,6 @@
 import { CustomType } from "./custom_type"
 
-const DELIMITER = /[<>\.,;:{}\(\)\|&'"\[\]]/g
+const DELIMITER = /[<>\.,;{}\(\)\|&\[\]'"]/g
 
 export class Entity {
     name: string
@@ -15,13 +15,20 @@ export class Entity {
             type = type.split("=>")[1].trim()
         }
         this.type = [...new Set(type.split(DELIMITER).map(t => t.trim()).filter(c => c.length > 0))]
+        this.type = this.type.map(type => {
+            if (type.includes(":")) {
+                return type.split(":")[1].trim()
+            }
+            return type
+        }).filter(c => c.length > 0)
         this.line = line
         this.typeReference = []
     }
 
     public setTypeReference(types: Map<string, CustomType[]>) {
         this.type.forEach(t => {
-            let tr = types.get(t)?.map(ct => ct.getFile())
+            let customType = types.get(t)
+            let tr = customType?.map(ct => ct.getFile())
             if (tr)
                 this.typeReference.push(...tr)
         })

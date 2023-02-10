@@ -3,7 +3,7 @@ import { CustomType } from "./custom_type"
 import { Entity } from "./entity"
 import { TypeScriptModule } from "./typescript_module"
 import { Importation } from "./importation"
-import { makeAbsolute } from "../utils/fileSystem"
+import { makeAbsolute, existFile } from "../utils/fileSystem"
 
 export function parse(files: string[], programDir: string) {
     const compilerOptions = ts.convertCompilerOptionsFromJson("compilerOptions", programDir, "tsconfig.json")
@@ -64,7 +64,12 @@ class Parser {
     protected visitImportDeclaration(declaration: ts.ImportDeclaration) {
         let moduleSpecifier = declaration.moduleSpecifier.getText().replaceAll(/['"]/g, "")
         let internal = moduleSpecifier.startsWith(".")
-        let source = makeAbsolute(this.sourceFile.fileName, [moduleSpecifier])[0] + ".ts" // Transform to absolute path to simplify analisis
+        let source = moduleSpecifier
+        if (internal) {
+            let pathBase = makeAbsolute(this.sourceFile.fileName, [moduleSpecifier])[0]
+            source = pathBase + ".ts" // Transform to absolute path to simplify analisis
+            source = existFile(source) ? source : pathBase + "/index.ts"
+        }
         let line = this.getLine(declaration.end)
         let name = declaration.importClause?.name?.getText()
         let bindings = declaration.importClause?.namedBindings

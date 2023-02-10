@@ -1,6 +1,5 @@
 import { Module } from "../ruler/rules";
 import { TypeScriptModule } from "../analyzer/typescript_module";
-import { string } from "yargs";
 
 export interface Occurrence {
     line?: number
