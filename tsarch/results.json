@@ -1,19 +1,29 @@
 {
   "ABSENCES": [
     {
-      "targetFile": "/home/matheushenriquecarvalhodepaivare/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
-      "originModule": "cli",
-      "targetModule": "leitor"
+      "targetFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
+      "originModule": "CLI",
+      "targetModule": "Leitor"
     }
   ],
   "DIVERGENCES": [
     {
       "line": 2,
       "kind": "importation",
-      "originFile": "/home/matheushenriquecarvalhodepaivare/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
-      "targetFile": "/home/matheushenriquecarvalhodepaivare/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/models/prova.ts",
-      "originModule": "cli",
-      "targetModule": "models"
+      "originFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
+      "targetFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/modelos/prova.ts",
+      "originModule": "CLI",
+      "targetModule": "Modelos"
+    }
+  ],
+  "ALERTS": [
+    {
+      "originModule": "Leitor",
+      "targetModule": "Utils"
+    },
+    {
+      "originModule": "CLI",
+      "targetModule": "Leitor"
     }
   ]
 }

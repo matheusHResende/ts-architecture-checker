@@ -1,5 +1,6 @@
 import { Module } from "../ruler/rules";
 import { TypeScriptModule } from "../analyzer/typescript_module";
+import { string } from "yargs";
 
 export interface Occurrence {
     line?: number
@@ -12,9 +13,10 @@ export interface Occurrence {
 }
 
 export interface Report {
-    divergencies: Occurrence[],
-    convergencies: Occurrence[],
+    divergencies: Occurrence[]
+    convergencies: Occurrence[]
     absences: Occurrence[]
+    alerts: Occurrence[]
 }
 
 function mapFileToModule(rules: Map<string, Module>): Map<string, string> {
@@ -28,7 +30,8 @@ export function check(symbols: TypeScriptModule[], rules: Map<string, Module>): 
     let occurrencies: Report = {
         divergencies: [],
         convergencies: [],
-        absences: []
+        absences: [],
+        alerts: []
     }
     symbols.forEach(file => {
         let actualModule = fileToModule.get(file.moduleName)
@@ -47,10 +50,14 @@ export function check(symbols: TypeScriptModule[], rules: Map<string, Module>): 
 }
 
 function verify(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
-    occurrencies = verifyEntity(module, rule, fileToModule, occurrencies)
-    occurrencies = verifyCustomType(module, rule, fileToModule, occurrencies)
-    occurrencies = verifyImportation(module, rule, fileToModule, occurrencies)
-    return findAbsences(module, rule, fileToModule, occurrencies)
+    function partial(func: (m: TypeScriptModule, r: Module, f: Map<string, string>, o: Report) => Report): Report {
+        return func(module, rule, fileToModule, occurrencies)
+    }
+    occurrencies = partial(verifyEntity)
+    occurrencies = partial(verifyCustomType)
+    occurrencies = partial(verifyImportation)
+    occurrencies = partial(findAbsences)
+    return partial(findAlerts)
 }
 
 function verifyEntity(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
@@ -118,25 +125,48 @@ function verifyImportation(module: TypeScriptModule, rule: Module, fileToModule:
     return occurrencies
 }
 
-function findAbsences(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
-    if (rule.required === undefined || rule.required.length <= 0) {
-        return occurrencies
-    }
+function getUsedModulesAndFiles(module: TypeScriptModule, fileToModule: Map<string, string>): string[] {
     let dependedFiles: string[] = []
     module.entities.forEach(entities => entities.forEach(entity => dependedFiles.push(...entity.typeReference)))
     module.types.forEach(customTypes => customTypes.forEach(customType => dependedFiles.push(...customType.typeReferences)))
     module.importations.forEach(importations => dependedFiles.push(importations.source))
-
-    dependedFiles = [...new Set(dependedFiles)]
-    let requiredModules = [...new Set(rule.required?.map(requiredFiles => fileToModule.get(requiredFiles)))]
-    let satisfiedModules = new Set<string>()
-    rule.required?.forEach(requiredFile => {
-        if (dependedFiles.some(file => requiredFile === file)) {
-            let mod = fileToModule.get(requiredFile)
-            if (mod !== undefined)
-                satisfiedModules.add(mod)
+    let dependedModules = new Set<string>()
+    dependedFiles.forEach(file => {
+        let module = fileToModule.get(file)
+        if (module) {
+            dependedModules.add(module)
         }
     })
+    return [...dependedModules, ...dependedFiles]
+}
+
+function findAlerts(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
+    if (!rule.originalAllowed || rule.originalAllowed.length <= 0) {
+        return occurrencies
+    }
+    let allowedModules = rule.originalAllowed
+    let satisfiedModules = new Set(getUsedModulesAndFiles(module, fileToModule))
+
+    allowedModules.forEach(allowed => {
+        if (allowed !== undefined)
+            if (!satisfiedModules.has(allowed)) {
+                occurrencies.alerts.push({
+                    originModule: fileToModule.get(module.moduleName),
+                    targetModule: allowed,
+                })
+            }
+    })
+
+    return occurrencies
+}
+
+function findAbsences(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
+    if (!rule.required || rule.required.length <= 0) {
+        return occurrencies
+    }
+
+    let requiredModules = rule.required
+    let satisfiedModules = new Set(getUsedModulesAndFiles(module, fileToModule))
 
     requiredModules.forEach(required => {
         if (required !== undefined)

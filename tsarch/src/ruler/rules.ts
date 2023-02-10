@@ -7,6 +7,8 @@ export interface Module {
     allowed?: string[]
     forbidden?: string[]
     required?: string[]
+    packages?: string[]
+    originalAllowed?: string[]
 }
 
 export function getRules(rulesPath: string, files: string[]): Map<string, Module> {
@@ -48,19 +50,24 @@ function expandModule(rules: Map<string, Module>, escope: string[] | undefined, 
 function expandRules(rulePath: string, rules: Map<string, Module>, files: string[]): Map<string, Module> {
     const modules = [...rules.keys()]
     // Normalize paths according rules file path
-    rules.forEach(module => module.files = makeAbsolute(rulePath, module.files))
+    rules.forEach(module => {
+        if (module.files) {
+            module.files = makeAbsolute(rulePath, module.files)
+        }
+    })
     // Transform generic form into especific file name
     rules.forEach(module => {
         module.files = expandRule(files, module.files)
         module.allowed = expandRule(files, module.allowed)
         module.forbidden = expandRule(files, module.forbidden)
         module.required = expandRule(files, module.required)
+        module.originalAllowed = module.allowed
     })
     // Transform module name into files
     rules.forEach(module => {
         module.allowed = expandModule(rules, module.allowed, modules)
         module.forbidden = expandModule(rules, module.forbidden, modules)
-        module.required = expandModule(rules, module.required, modules)
+        // module.required = expandModule(rules, module.required, modules)
     })
     // Transform into allowed
     rules.forEach(module => {

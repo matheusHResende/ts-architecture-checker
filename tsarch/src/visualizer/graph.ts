@@ -15,7 +15,7 @@ function edgeHelper(occurence: Occurrence, edges: Map<string, Edge>, type: strin
     if (occurence.originModule === undefined || occurence.targetModule === undefined) return
     if (occurence.originModule === occurence.targetModule) return
     // let edge = edges.get(occurence.originModule+"+"+occurence.targetModule+"+"+type)
-    let edge = edges.get(occurence.originModule+"+"+occurence.targetModule)
+    let edge = edges.get(occurence.originModule + "+" + occurence.targetModule)
     if (edge === undefined) {
         edge = {
             from: occurence.originModule,
@@ -32,7 +32,7 @@ function edgeHelper(occurence: Occurrence, edges: Map<string, Edge>, type: strin
         edge.size = 1
     }
     // edges.set(occurence.originModule+"+"+occurence.targetModule+"+"+type, edge)
-    edges.set(occurence.originModule+"+"+occurence.targetModule, edge)
+    edges.set(occurence.originModule + "+" + occurence.targetModule, edge)
 }
 
 interface Complement {
@@ -42,7 +42,7 @@ interface Complement {
 }
 
 export class Graph extends Viewer {
-    generate(): void {
+    generate(name: string): void {
         let nodes = new Set<string>()
         let edges = this.getEdges()
         edges.forEach(edge => {
@@ -79,6 +79,11 @@ export class Graph extends Viewer {
             color: "orange",
             style: "dashed"
         })
+        complements.set("alert", {
+            label: (size: number) => `?(#${size})`,
+            color: "darkgray",
+            style: "dotted"
+        })
         edges.forEach(edge => {
             let complement = complements.get(edge.type)
             if (complement == undefined) return
@@ -91,14 +96,15 @@ export class Graph extends Viewer {
             }
             graph.createEdge([edge.from, edge.to], edgeAttributes)
         })
-        render(graph, "a.png")
+        render(graph, name)
     }
-    
+
     getEdges(): Edge[] {
         let edges = new Map<string, Edge>()
         this.convergencies.forEach(occurence => edgeHelper(occurence, edges, "convergence"))
         this.absences.forEach(occurence => edgeHelper(occurence, edges, "absence"))
         this.divergencies.forEach(occurence => edgeHelper(occurence, edges, "divergence"))
+        this.alerts.forEach(occurence => edgeHelper(occurence, edges, "alert"))
         let ed: Edge[] = []
         edges.forEach(edge => ed.push(edge))
         return ed

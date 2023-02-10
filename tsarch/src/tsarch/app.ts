@@ -14,11 +14,12 @@ export function verify(directory: string, rulerFile?: string) {
     try {
         const rules = getRules(rule, files)
         const report = check(symbols, rules)
-        new Graph(report.divergencies, report.convergencies, report.absences).generate()
-        new Textual(report.divergencies, report.convergencies, report.absences).generate()
-        new DSM(report.divergencies, report.convergencies, report.absences).generate()
+        new Graph(report.divergencies, report.convergencies, report.absences, report.alerts).generate("graph.png")
+        new Textual(report.divergencies, report.convergencies, report.absences, report.alerts).generate("results.json")
+        new DSM(report.divergencies, report.convergencies, report.absences, report.alerts).generate("dsm.png")
     }
     catch (err) {
+        console.log(err)
         if (err instanceof Error) {
             console.log((err as Error).message)
         }
