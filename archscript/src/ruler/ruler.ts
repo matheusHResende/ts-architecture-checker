@@ -1,7 +1,8 @@
 import { readFileSync } from "fs";
-import { Project } from "../parser/project";
+import { Project } from "../project/project";
 import { Module } from "./module";
-import { Module as TSModule } from "../parser/module" 
+import { Drift } from "./drift"
+import { Module as TSModule } from "../project/module"
 
 export class Ruler {
     ruleSet: Module[]
@@ -11,79 +12,97 @@ export class Ruler {
     ruleModules: Map<string, Module>
 
     constructor(ruleFile: string, project: Project) {
-        this.ruleSet = JSON.parse(readFileSync(ruleFile, {encoding: 'utf-8'})).
+        this.ruleSet = JSON.parse(readFileSync(ruleFile, { encoding: 'utf-8' })).
             map((module: Module) => Object.assign(new Module(module.name, module.files), module))
+
         this.project = project
         this.project.parse()
         this.projectModules = new Map<string, TSModule>()
         this.setProjectModules()
         this.expandRules()
         this.matchModules()
-
+        this.simplify()
         this.ruleModules = new Map<string, Module>()
         this.ruleSet.forEach(module => this.ruleModules.set(module.name, module))
     }
 
-    getDrifts() {
-        this.projectModules.forEach(tsModule => {
-            tsModule.referedRules.forEach(referedRule => {
-                const rule = this.ruleModules.get(referedRule)
-                if(rule === undefined) return
-                const dependencies = tsModule.getDependencies()
-                // everything is allowed
-                for (const dependency of dependencies) {
-                    if (!rule.allowed?.some(allowed => allowed === dependency)){
-                        console.log(`${dependency} is not allowed for ${tsModule.name}`)
-                    }
-                }
-                // none is forbidden
-                for (const dependency of dependencies) {
-                    if (rule.forbidden?.some(forbidden => forbidden === dependency)){
-                        console.log(`${dependency} is forbidden for ${tsModule.name}`)
-                    }
-                }
-                // everything required is done
-                if(rule.required === undefined) return
-                for (const required of rule.required) {
-                    if (!dependencies.some(dependency => dependency === required)) {
-                        console.log(`${required} is required in ${tsModule.name}`)
-                    }
-                }
-
-                //[dataAccess:required:HasId] EntityStore does not depend on HasId.
-            })
-        }) 
+    simplify(): void {
+        const available = this.project.modules.map(module => module.name)
+        this.ruleSet.forEach(rule => rule.simplify(available))
     }
 
-    matchModules() {
+    getDrifts(): Drift[] {
+        const drifts: Drift[] = []
+        this.projectModules.forEach(tsModule => {
+            const rule = this.ruleModules.get(tsModule.referedRule)
+            if (rule === undefined) return
+            const dependencies = tsModule.getDependencies()
+            // everything is allowed
+            for (const dependency of dependencies) {
+                if (rule.files.some(file => dependency === file)) continue
+                if (!rule.allowed?.some(allowed => allowed === dependency)) {
+                    const dependencyModule = this.projectModules.get(dependency)?.referedRule
+                    if (dependencyModule != undefined)
+                        drifts.push(
+                            new Drift(
+                                "allowed",
+                                tsModule.referedRule,
+                                tsModule.name,
+                                dependency,
+                                dependencyModule
+                            )
+                        )
+                }
+            }
+            // everything required is done
+            if (rule.required === undefined) return
+            for (const required of rule.required) {
+                if (!dependencies.some(dependency => dependency === required)) {
+                    const requiredModule = this.projectModules.get(required)?.referedRule
+                    if (requiredModule != undefined)
+                        drifts.push(
+                            new Drift(
+                                "required",
+                                tsModule.referedRule,
+                                tsModule.name,
+                                required,
+                                requiredModule
+                            )
+                        )
+                }
+            }
+
+        })
+        return drifts
+    }
+
+    matchModules(): void {
         this.ruleSet.forEach(module => module.files.forEach(file => {
             const tsModule = this.projectModules.get(file)
-            tsModule?.referedRules.push(module.name)
+            if (tsModule == undefined) return
+            tsModule.referedRule = module.name
         }))
     }
 
-    setProjectModules(){
+    setProjectModules(): void {
         this.project.modules.forEach(module => this.projectModules.set(module.name, module))
     }
 
-    expandRules() {
+    expandRules(): void {
         const expandableNames = new Set<string>()
         this.ruleSet.forEach(module => {
-            // module.expandRules(projectModules)
             module.getExpandableNames().forEach(name => expandableNames.add(name))
         })
-
         const nameCache = new Map<string, string[]>()
-        
+
         expandableNames.forEach(name => {
-            if(name.endsWith("**")){
+            if (name.endsWith("**")) {
                 nameCache.set(name, this.findRelated(name.replaceAll('*', '')))
             }
-            else if(name.endsWith("*")){
+            else if (name.endsWith("*")) {
                 nameCache.set(name, this.findStrictRelated(name.replaceAll('*', '')))
             }
         })
-        
         this.ruleSet.forEach(module => module.expandRules(nameCache))
 
         const modulesFiles = new Map<string, string[]>()
@@ -105,18 +124,18 @@ export class Ruler {
     findStrictRelated(file: string): string[] {
         const related: string[] = []
         this.project.modules.forEach(projectModule => {
-            if(projectModule.package === file){
+            if (projectModule.package === file) {
                 related.push(projectModule.name)
                 // related.push(...projectModule.getExportedComponents().map(component => component.globalIdentifier))
             }
         })
         return related
     }
-    
+
     findRelated(file: string): string[] {
         const related: string[] = []
         this.project.modules.forEach(projectModule => {
-            if(projectModule.name.startsWith(file)){
+            if (projectModule.name.startsWith(file)) {
                 related.push(projectModule.name)
                 // related.push(...projectModule.getExportedComponents().map(component => component.globalIdentifier))
             }

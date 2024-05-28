@@ -1,6 +1,6 @@
-import { readFileSync, readFile as rf, Dir } from "fs"
-import { Importation } from "./importation";
-import { Component } from "./component";
+import { readFileSync } from "fs"
+import { Importation } from "../project/importation";
+import { Component } from "../project/component";
 import ts from "typescript";
 
 function printRecursiveFrom(
@@ -12,6 +12,12 @@ function printRecursiveFrom(
     node.forEachChild(child =>
         printRecursiveFrom(child, indentLevel + 1)
     );
+}
+
+function walk(classNode: ts.ClassDeclaration) {
+    console.log("########### WALKER ###########")
+    console.log("Class Name:", classNode.name?.text)
+    console.log(classNode.members.forEach(member => console.log(member.name?.getText())))
 }
 
 class Parser {
@@ -50,7 +56,7 @@ class Parser {
         function isExported(node: ts.Node): boolean {
             let exported = false
             node.forEachChild(child => {
-                if(child.kind === ts.SyntaxKind.ExportKeyword){
+                if (child.kind === ts.SyntaxKind.ExportKeyword) {
                     exported = true
                 }
             })
@@ -61,7 +67,7 @@ class Parser {
             let importedModule = ""
             let namedImports: Array<string> = []
             function parseImportation(child: ts.Node) {
-                switch(child.kind) {
+                switch (child.kind) {
                     case ts.SyntaxKind.StringLiteral:
                         importedModule = child.getText()
                         break
@@ -75,7 +81,7 @@ class Parser {
             node.forEachChild(parseImportation)
             return new Importation(module, importedModule, namedImports)
         }
-        
+
         function getType(node: ts.Node): string {
             let type: string = "any"
             node.forEachChild(child => {
@@ -133,6 +139,7 @@ class Parser {
                     break
                 case ts.SyntaxKind.ClassDeclaration:
                     component.kind = "class"
+                    walk(node as ts.ClassDeclaration)
                     break
                 case ts.SyntaxKind.InterfaceDeclaration:
                     component.kind = "interface"

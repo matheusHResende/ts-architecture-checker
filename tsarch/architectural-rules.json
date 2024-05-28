@@ -1,0 +1,49 @@
+{
+    "analyzer": {
+        "files": [
+            "./analyzer/*"
+        ],
+        "allowed": [
+            "utils"
+        ]
+    },
+    "cli": {
+        "files": [
+            "./cli/*"
+        ],
+        "allowed": [
+            "tsarch",
+            "utils"
+        ]
+    },
+    "conformance": {
+        "files": [
+            "./conformance/*"
+        ],
+        "allowed": [
+            "analyzer",
+            "ruler"
+        ],
+        "required": [
+            "ruler"
+        ]
+    },
+    "tsarch": {
+        "files": [
+            "./tsarch/*"
+        ],
+        "forbidden": [
+            "cli"
+        ]
+    },
+    "utils": {
+        "files": [
+            "./utils/*"
+        ]
+    },
+    "ruler": {
+        "files": [
+            "./ruler/*"
+        ]
+    }
+}

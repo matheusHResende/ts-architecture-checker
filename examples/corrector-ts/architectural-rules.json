@@ -1,0 +1,54 @@
+{
+    "CLI": {
+        "files": [
+            "./src/cli/**"
+        ],
+        "allowed": [
+            "Leitor"
+        ],
+        "required": [
+            "Leitor"
+        ]
+    },
+    "Corretor": {
+        "files": [
+            "./src/corretor/*"
+        ],
+        "forbidden": [
+            "Commands",
+            "CLI"
+        ]
+    },
+    "Estatisticas": {
+        "files": [
+            "./src/estatisticas/*"
+        ],
+        "allowed": [
+            "Modelos"
+        ]
+    },
+    "Leitor": {
+        "files": [
+            "./src/leitor/*"
+        ],
+        "allowed": [
+            "Corretor",
+            "Modelos",
+            "Utils"
+        ],
+        "required": [
+            "Corretor"
+        ]
+    },
+    "Modelos": {
+        "files": [
+            "./src/modelos/*"
+        ]
+    },
+    "Utils": {
+        "files": [
+            "./src/utils/**"
+        ],
+        "allowed": []
+    }
+}
