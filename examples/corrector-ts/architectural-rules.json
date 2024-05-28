@@ -34,7 +34,7 @@
         "allowed": [
             "Corretor",
             "Modelos",
-            "Utils"
+            "Útil"
         ],
         "required": [
             "Corretor"
@@ -45,7 +45,7 @@
             "./src/modelos/*"
         ]
     },
-    "Utils": {
+    "Útil": {
         "files": [
             "./src/utils/**"
         ],

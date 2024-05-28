@@ -1,0 +1,29 @@
+{
+  "ABSENCES": [],
+  "DIVERGENCES": [
+    {
+      "line": 3,
+      "kind": "entity",
+      "name": "divergencies",
+      "originFile": "./src/visualizer/viewer.ts",
+      "targetFile": "./src/conformancer/conformancer.ts",
+      "originModule": "visualizer",
+      "targetModule": "conformance"
+    },
+    {
+      "line": 8,
+      "kind": "entity",
+      "name": "divergencies",
+      "originFile": "./src/visualizer/viewer.ts",
+      "targetFile": "./src/conformancer/conformancer.ts",
+      "originModule": "visualizer",
+      "targetModule": "conformance"
+    }
+  ],
+  "ALERTS": [
+    {
+      "originModule": "cli",
+      "targetModule": "util"
+    }
+  ]
+}

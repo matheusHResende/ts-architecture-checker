@@ -1,0 +1,37 @@
+{
+  "ABSENCES": [
+    {
+      "targetFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
+      "originModule": "CLI",
+      "targetModule": "Leitor"
+    }
+  ],
+  "DIVERGENCES": [
+    {
+      "line": 4,
+      "kind": "importation",
+      "originFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/corretor/corretor.ts",
+      "targetFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/utils/date.ts",
+      "originModule": "Corretor",
+      "targetModule": "AWS-S3"
+    },
+    {
+      "line": 2,
+      "kind": "importation",
+      "originFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/cli/commands/json.ts",
+      "targetFile": "/mnt/c/Users/Matheus/OneDrive/Área de Trabalho/TCC/ts-architecture-checker/examples/corrector-ts/src/modelos/prova.ts",
+      "originModule": "CLI",
+      "targetModule": "Modelos"
+    }
+  ],
+  "ALERTS": [
+    {
+      "originModule": "Leitor",
+      "targetModule": "Util"
+    },
+    {
+      "originModule": "CLI",
+      "targetModule": "Leitor"
+    }
+  ]
+}

@@ -6,7 +6,13 @@ import { Graph } from "../visualizer/graph"
 import { Textual } from "../visualizer/textual"
 import { DSM } from "../visualizer/dsm"
 
-export function verify(directory: string, rulerFile?: string) {
+export interface ArtifactPaths {
+    dsm: string,
+    textual: string,
+    graph: string,
+}
+
+export function verify(directory: string, paths: ArtifactPaths, rulerFile?: string) {
     const rule = rulerFile ? rulerFile : `${directory}/architectural-rules.json`
     const files = getFiles(directory).filter(file => file.endsWith(".ts"))
 
@@ -14,9 +20,9 @@ export function verify(directory: string, rulerFile?: string) {
     try {
         const rules = getRules(rule, files)
         const report = check(symbols, rules)
-        new Graph(report.divergencies, report.convergencies, report.absences, report.alerts).generate("graph.png")
-        new Textual(report.divergencies, report.convergencies, report.absences, report.alerts).generate("results.json")
-        new DSM(report.divergencies, report.convergencies, report.absences, report.alerts).generate("dsm.png")
+        new Graph(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.graph)
+        new Textual(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.textual)
+        new DSM(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.dsm)
     }
     catch (err) {
         console.log(err)

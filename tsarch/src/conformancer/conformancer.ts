@@ -1,5 +1,6 @@
 import { Module } from "../ruler/rules";
 import { TypeScriptModule } from "../analyzer/typescript_module";
+import { Entity } from "../analyzer/entity";
 
 export interface Occurrence {
     line?: number
@@ -59,28 +60,41 @@ function verify(module: TypeScriptModule, rule: Module, fileToModule: Map<string
     return partial(findAlerts)
 }
 
-function verifyEntity(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
+function verifyEntity(
+    module: TypeScriptModule,
+    rule: Module, fileToModule: Map<string, string>,
+    occurrencies: Report): Report {
+    const check = ({ line, name }: Entity, reference: string) => {
+        console.log(reference, rule.allowed)
+        let occurrence = {
+            line: line,
+            kind: "entity",
+            name: name,
+            originFile: module.moduleName,
+            targetFile: reference,
+            originModule: fileToModule.get(module.moduleName),
+            targetModule: fileToModule.get(reference)
+        }
+        if (!rule.allowed?.some(file => file === reference)) {
+            occurrencies.divergencies.push(occurrence)
+        }
+        else {
+            occurrencies.convergencies.push(occurrence)
+        }
+    }
+
     module.entities.forEach(entities => entities.forEach(e => {
-        e.typeReference.forEach(reference => {
-            let occurrence = {
-                line: e.line,
-                kind: "entity",
-                name: e.name,
-                originFile: module.moduleName,
-                targetFile: reference,
-                originModule: fileToModule.get(module.moduleName),
-                targetModule: fileToModule.get(reference)
-            }
-            if (!rule.allowed?.some(file => file === reference)) {
-                occurrencies.divergencies.push(occurrence)
-            }
-            else {
-                occurrencies.convergencies.push(occurrence)
-            }
-        })
+        if (e.qualifiedName) {
+            check(e, e.qualifiedName)
+        } else {
+            e.typeReference.forEach(reference => {
+                check(e, reference)
+            })
+        }
     }))
     return occurrencies
 }
+
 function verifyCustomType(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
     module.types.forEach(customType => customType.forEach(ct => {
         ct.typeReferences.forEach(reference => {
@@ -139,7 +153,11 @@ function getUsedModulesAndFiles(module: TypeScriptModule, fileToModule: Map<stri
     return [...dependedModules, ...dependedFiles]
 }
 
-function findAlerts(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
+function findAlerts(
+    module: TypeScriptModule,
+    rule: Module,
+    fileToModule: Map<string, string>,
+    occurrencies: Report): Report {
     if (!rule.originalAllowed || rule.originalAllowed.length <= 0) {
         return occurrencies
     }
@@ -159,7 +177,11 @@ function findAlerts(module: TypeScriptModule, rule: Module, fileToModule: Map<st
     return occurrencies
 }
 
-function findAbsences(module: TypeScriptModule, rule: Module, fileToModule: Map<string, string>, occurrencies: Report): Report {
+function findAbsences(
+    module: TypeScriptModule,
+    rule: Module,
+    fileToModule: Map<string, string>,
+    occurrencies: Report): Report {
     if (!rule.required || rule.required.length <= 0) {
         return occurrencies
     }

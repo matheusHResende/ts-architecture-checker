@@ -47,7 +47,9 @@ function expandModule(rules: Map<string, Module>, escope: string[] | undefined, 
     return module
 }
 
-function expandRules(rulePath: string, rules: Map<string, Module>, files: string[]): Map<string, Module> {
+function expandRules(
+    rulePath: string, rules: Map<string, Module>, files: string[]
+): Map<string, Module> {
     const modules = [...rules.keys()]
     // Normalize paths according rules file path
     rules.forEach(module => {
@@ -67,12 +69,12 @@ function expandRules(rulePath: string, rules: Map<string, Module>, files: string
     rules.forEach(module => {
         module.allowed = expandModule(rules, module.allowed, modules)
         module.forbidden = expandModule(rules, module.forbidden, modules)
-        // module.required = expandModule(rules, module.required, modules)
     })
     // Transform into allowed
     rules.forEach(module => {
         let reference = new Set(module.forbidden ? module.forbidden : [])
-        module.allowed = module.allowed != undefined && module.allowed.length > 0 ? module.allowed : files.filter(file => !reference.has(file))
+        module.allowed = module.allowed != undefined && module.allowed.length > 0 ?
+            module.allowed : files.filter(file => !reference.has(file))
         module.forbidden = undefined
     })
     // Make module itself allowed

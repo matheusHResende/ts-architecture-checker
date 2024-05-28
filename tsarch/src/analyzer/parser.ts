@@ -47,18 +47,33 @@ class Parser {
         return this.sourceFile.getLineAndCharacterOfPosition(position).line + 1
     }
 
-    deduceType(node: HasType) {
+    deduceType(node: HasType): [string, string?] {
+        let qualifiedName = this.getQuallifiedName(node)
+
         let typeSymbol = this.typeChecker.getTypeAtLocation(node)
         let type = this.typeChecker.typeToString(typeSymbol)
 
-        return type
+        return [type, qualifiedName]
     }
 
-    deduceReturn(node: HasType) {
+    deduceReturn(node: HasType): [string, string?] {
+        let qualifiedName = this.getQuallifiedName(node)
         let typeSymbol = this.typeChecker.getTypeAtLocation(node)
         let type = this.typeChecker.typeToString(typeSymbol)
 
-        return type.split("=>")[1].trim()
+        return [type.split("=>")[1].trim(), qualifiedName]
+    }
+
+    private getQuallifiedName(node: ts.Node) {
+        let type = this.typeChecker.getTypeAtLocation(node).getSymbol()
+        if (type === undefined) {
+            return undefined
+        }
+        let fqn = this.typeChecker.getFullyQualifiedName(type)
+        if (fqn?.match(/^".*"\./g) && !fqn.includes("node_modules")) {
+            return fqn.split(".")[0].replaceAll('"', "") + ".ts"
+        }
+        return undefined
     }
 
     protected visitImportDeclaration(declaration: ts.ImportDeclaration) {
@@ -85,10 +100,10 @@ class Parser {
 
     protected visitVariableDeclaration(declaration: ts.VariableDeclaration) {
         let name = declaration.name.getText()
-        let type = this.deduceType(declaration)
+        let [type, qualifiedName] = this.deduceType(declaration)
         let line = this.getLine(declaration.pos)
 
-        this.module.addEntity(new Entity(name, type, line))
+        this.module.addEntity(new Entity(name, type, line, qualifiedName))
     }
 
     protected visitClassDeclaration(node: ts.ClassDeclaration) {
@@ -115,26 +130,26 @@ class Parser {
     protected visitFunctionDeclaration(node: ts.FunctionDeclaration) {
         let name = node.name?.getText()
         name = name ? name : "__annonimous"
-        let type = this.deduceReturn(node)
+        let [type, qualifiedName] = this.deduceReturn(node)
         let line = this.getLine(node.pos)
 
-        this.module.addEntity(new Entity(name, type, line))
+        this.module.addEntity(new Entity(name, type, line, qualifiedName))
     }
 
     protected visitMethodDeclaration(node: ts.MethodDeclaration) {
         let name = node.name.getText()
-        let type = this.deduceReturn(node)
+        let [type, qualifiedName] = this.deduceReturn(node)
         let line = this.getLine(node.pos)
 
-        this.module.addEntity(new Entity(name, type, line))
+        this.module.addEntity(new Entity(name, type, line, qualifiedName))
     }
 
     protected visitParameter(node: ts.ParameterDeclaration) {
         let name = node.name.getText()
-        let type = this.deduceType(node)
+        let [type, qualifiedName] = this.deduceType(node)
         let line = this.getLine(node.pos)
 
-        this.module.addEntity(new Entity(name, type, line))
+        this.module.addEntity(new Entity(name, type, line, qualifiedName))
     }
 
     protected visitTypeAliasDeclaration(node: ts.TypeAliasDeclaration) {
@@ -147,26 +162,26 @@ class Parser {
 
     protected visitPropertyDeclaration(node: ts.PropertyDeclaration) {
         let name = node.name.getText()
-        let type = this.deduceType(node)
+        let [type, qualifiedName] = this.deduceType(node)
         let line = this.getLine(node.pos)
 
-        this.module.addEntity(new Entity(name, type, line))
+        this.module.addEntity(new Entity(name, type, line, qualifiedName))
     }
 
     protected visitPropertySignature(node: ts.PropertySignature) {
         let name = node.name.getText()
-        let type = this.deduceType(node)
+        let [type, qualifiedName] = this.deduceType(node)
         let line = this.getLine(node.pos)
 
-        this.module.addEntity(new Entity(name, type, line))
+        this.module.addEntity(new Entity(name, type, line, qualifiedName))
     }
 
     protected visitArrowFunction(node: ts.ArrowFunction) {
         let name = "__annonimous"
-        let type = this.deduceReturn(node)
+        let [type, qualifiedName] = this.deduceReturn(node)
         let line = this.getLine(node.pos)
 
-        this.module.addEntity(new Entity(name, type, line))
+        this.module.addEntity(new Entity(name, type, line, qualifiedName))
     }
 
     protected visitEnumDeclaration(node: ts.EnumDeclaration) {

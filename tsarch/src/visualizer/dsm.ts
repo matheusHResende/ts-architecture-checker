@@ -77,7 +77,7 @@ export class DSM extends Graph {
         table.createNode("DSM", {
             label: ["<",
                 '<TABLE border="1" cellspacing="0">',
-                '<TH><TD colspan="2" bgcolor="darkgray">Modules</TD>',
+                '<TH><TD colspan="2" bgcolor="darkgray">Módulos</TD>',
                 ...nodes.map((node, index) => `<TD bgcolor="darkgray">${index + 1}</TD>`),
                 '</TH>',
                 ...lines,

@@ -6,10 +6,11 @@ export class Entity {
     name: string
     type: string[]
     line: number
+    qualifiedName?: string
 
     typeReference: string[]
 
-    constructor(name: string, type: string, line: number) {
+    constructor(name: string, type: string, line: number, qualifiedName?: string) {
         this.name = name
         if (type.includes("=>")) {
             type = type.split("=>")[1].trim()
@@ -23,6 +24,7 @@ export class Entity {
         }).filter(c => c.length > 0)
         this.line = line
         this.typeReference = []
+        this.qualifiedName = qualifiedName
     }
 
     public setTypeReference(types: Map<string, CustomType[]>) {

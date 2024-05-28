@@ -1,24 +1,24 @@
 {
     "analyzer": {
         "files": [
-            "./analyzer/*"
+            "./src/analyzer/*"
         ],
         "allowed": [
-            "utils"
+            "util"
         ]
     },
     "cli": {
         "files": [
-            "./cli/*"
+            "./src/cli/**"
         ],
         "allowed": [
             "tsarch",
-            "utils"
+            " util"
         ]
     },
     "conformance": {
         "files": [
-            "./conformance/*"
+            "./src/conformancer/*"
         ],
         "allowed": [
             "analyzer",
@@ -28,22 +28,30 @@
             "ruler"
         ]
     },
+    "visualizer": {
+        "files": [
+            "./src/visualizer/*"
+        ],
+        "allowed": [
+            "util"
+        ]
+    },
     "tsarch": {
         "files": [
-            "./tsarch/*"
+            "./src/tsarch/*"
         ],
         "forbidden": [
             "cli"
         ]
     },
-    "utils": {
+    "util": {
         "files": [
-            "./utils/*"
+            "./src/utils/*"
         ]
     },
     "ruler": {
         "files": [
-            "./ruler/*"
+            "./src/ruler/*"
         ]
     }
 }
