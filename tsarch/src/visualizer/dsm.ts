@@ -40,6 +40,12 @@ export class DSM extends Graph {
         this.render(matrix, n, name)
     }
     render(matrix: Data[][], nodes: string[], name: string) {
+        const CELL_STYLE = new Map<string, { color: string; symbol: string }>([
+            ["absence",   { color: "red",      symbol: "X" }],
+            ["divergence",{ color: "orange",   symbol: "!" }],
+            ["alert",     { color: "darkgray", symbol: "?" }],
+        ])
+
         let table = new Digraph()
         //...nodes.map((node, index) => `<TD colspan="2">${index} - ${node}</TD>`),
 
@@ -49,25 +55,8 @@ export class DSM extends Graph {
                 // Escrever o side header
                 `<TD colspan="2" align="LEFT">${index + 1} - ${nodes[index]}</TD>`,
                 ...line.map(data => {
-                    let c = "white"
-                    c = data.type == "absence" ? "red" : c
-                    c = data.type == "divergence" ? "orange" : c
-                    c = data.type == "alert" ? "darkgray" : c
-
-                    let style = new Map()
-                    style.set("absence", {
-                        color: "red",
-                        symbol: "X"
-                    })
-                    style.set("divergence", {
-                        color: "orange",
-                        symbol: "!",
-                    })
-                    style.set("alert", {
-                        color: "darkgray",
-                        symbol: "?",
-                    })
-                    return `<TD bgcolor="${style.get(data.type)?.color ?? "white"}">${style.get(data.type)?.symbol ?? ""}${data.size ?? ""}</TD>`
+                    const s = CELL_STYLE.get(data.type ?? "")
+                    return `<TD bgcolor="${s?.color ?? "white"}">${s?.symbol ?? ""}${data.size ?? ""}</TD>`
                 }),
                 '</TR>'
             ]
