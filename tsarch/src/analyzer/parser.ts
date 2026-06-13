@@ -1,4 +1,6 @@
 import * as ts from "typescript"
+import * as fs from "fs"
+import * as path from "path"
 import { CustomType } from "./custom_type"
 import { Entity } from "./entity"
 import { TypeScriptModule } from "./typescript_module"
@@ -6,8 +8,16 @@ import { Importation } from "./importation"
 import { makeAbsolute, existFile } from "../utils/fileSystem"
 
 export function parse(files: string[], programDir: string) {
-    const compilerOptions = ts.convertCompilerOptionsFromJson("compilerOptions", programDir, "tsconfig.json")
-    const program = ts.createProgram(files, compilerOptions.options);
+    let compilerOptions: ts.CompilerOptions = {}
+    const tsconfigPath = path.join(programDir, "tsconfig.json")
+    if (fs.existsSync(tsconfigPath)) {
+        const raw = JSON.parse(fs.readFileSync(tsconfigPath, "utf-8"))
+        const result = ts.convertCompilerOptionsFromJson(raw.compilerOptions ?? {}, programDir, "tsconfig.json")
+        if (!result.errors.length) {
+            compilerOptions = result.options
+        }
+    }
+    const program = ts.createProgram(files, compilerOptions);
     const typeChecker = program.getTypeChecker()
 
     const sourceFiles = program.getSourceFiles().filter(files => !files.fileName.includes("node_modules"))
@@ -60,8 +70,12 @@ class Parser {
         let qualifiedName = this.getQuallifiedName(node)
         let typeSymbol = this.typeChecker.getTypeAtLocation(node)
         let type = this.typeChecker.typeToString(typeSymbol)
-
-        return [type.split("=>")[1].trim(), qualifiedName]
+        const arrowIndex = type.indexOf("=>")
+        if (arrowIndex === -1) {
+            // Overloaded function or type rendered without "=>": use full string
+            return [type, qualifiedName]
+        }
+        return [type.substring(arrowIndex + 2).trim(), qualifiedName]
     }
 
     private getQuallifiedName(node: ts.Node) {
@@ -93,7 +107,11 @@ class Parser {
             entity.push(name)
         }
 
-        bindings?.forEachChild(child => { entity.push(...child.getText().split(" as ")) })
+        bindings?.forEachChild(child => {
+            const text = child.getText()
+            const localName = text.includes(" as ") ? text.split(" as ")[1].trim() : text.trim()
+            entity.push(localName)
+        })
 
         entity.forEach(entity => this.module.addImportation(new Importation(entity, source, line, internal)))
     }

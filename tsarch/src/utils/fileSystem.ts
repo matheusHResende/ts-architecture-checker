@@ -5,8 +5,8 @@ function getFiles(path: string): Array<string> {
     const filesAndDirs = readdirSync(path)
     let files: Array<string> = []
 
-    for (const file in filesAndDirs) {
-        const subPath = `${path}${sep}${filesAndDirs[file]}`
+    for (const file of filesAndDirs) {
+        const subPath = `${path}${sep}${file}`
         if (subPath.endsWith("node_modules")) continue
         if (lstatSync(subPath).isDirectory()) {
             files.push(...getFiles(subPath))
@@ -24,7 +24,7 @@ function toAbsolute(path: string): string {
 
 function makeAbsolute(newReference: string, files: string[]): string[] {
     let path: string[] = []
-    if (lstatSync(newReference).isFile()) {
+    if (existsSync(newReference) && lstatSync(newReference).isFile()) {
         path = newReference.split(sep)
         path.pop()
     }

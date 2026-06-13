@@ -51,10 +51,28 @@ function expandRules(
     rulePath: string, rules: Map<string, Module>, files: string[]
 ): Map<string, Module> {
     const modules = [...rules.keys()]
+
+    // Captura quais módulos tinham allowed/forbidden ANTES de qualquer expansão
+    const hadExplicitAllowed = new Map<string, boolean>()
+    const hadExplicitForbidden = new Map<string, boolean>()
+    rules.forEach((module, name) => {
+        hadExplicitAllowed.set(name, module.allowed !== undefined)
+        hadExplicitForbidden.set(name, module.forbidden !== undefined)
+    })
+
     // Normalize paths according rules file path
     rules.forEach(module => {
         if (module.files) {
             module.files = makeAbsolute(rulePath, module.files)
+        }
+        if (module.allowed) {
+            module.allowed = makeAbsolute(rulePath, module.allowed)
+        }
+        if (module.forbidden) {
+            module.forbidden = makeAbsolute(rulePath, module.forbidden)
+        }
+        if (module.required) {
+            module.required = makeAbsolute(rulePath, module.required)
         }
     })
     // Transform generic form into especific file name
@@ -70,11 +88,19 @@ function expandRules(
         module.allowed = expandModule(rules, module.allowed, modules)
         module.forbidden = expandModule(rules, module.forbidden, modules)
     })
-    // Transform into allowed
-    rules.forEach(module => {
-        let reference = new Set(module.forbidden ? module.forbidden : [])
-        module.allowed = module.allowed != undefined && module.allowed.length > 0 ?
-            module.allowed : files.filter(file => !reference.has(file))
+    // Transform into allowed — preserva intenção original
+    rules.forEach((module, name) => {
+        const reference = new Set(module.forbidden ? module.forbidden : [])
+        if (hadExplicitForbidden.get(name)) {
+            // Tinha forbidden: allowed = complemento de forbidden
+            module.allowed = files.filter(file => !reference.has(file))
+        } else if (hadExplicitAllowed.get(name)) {
+            // Tinha allowed explícito: manter como está (mesmo que [])
+            // [] significa "não permite nada externo" — intenção do usuário
+        } else {
+            // Sem allowed nem forbidden: permite tudo
+            module.allowed = files.filter(file => !reference.has(file))
+        }
         module.forbidden = undefined
     })
     // Make module itself allowed

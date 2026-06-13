@@ -13,7 +13,8 @@ export class Entity {
     constructor(name: string, type: string, line: number, qualifiedName?: string) {
         this.name = name
         if (type.includes("=>")) {
-            type = type.split("=>")[1].trim()
+            const arrowIdx = type.indexOf("=>")
+            type = type.substring(arrowIdx + 2).trim()
         }
         this.type = [...new Set(type.split(DELIMITER).map(t => t.trim()).filter(c => c.length > 0))]
         this.type = this.type.map(type => {
