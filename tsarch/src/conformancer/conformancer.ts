@@ -65,7 +65,6 @@ function verifyEntity(
     rule: Module, fileToModule: Map<string, string>,
     occurrencies: Report): Report {
     const check = ({ line, name }: Entity, reference: string) => {
-        console.log(reference, rule.allowed)
         let occurrence = {
             line: line,
             kind: "entity",
@@ -111,7 +110,7 @@ function verifyCustomType(module: TypeScriptModule, rule: Module, fileToModule: 
                 occurrencies.divergencies.push(occurrence)
             }
             else {
-                occurrencies.divergencies.push(occurrence)
+                occurrencies.convergencies.push(occurrence)
             }
         })
     }))

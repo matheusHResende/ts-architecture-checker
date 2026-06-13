@@ -12,22 +12,13 @@ export interface ArtifactPaths {
     graph: string,
 }
 
-export function verify(directory: string, paths: ArtifactPaths, rulerFile?: string) {
+export function verify(directory: string, paths: ArtifactPaths, rulerFile?: string): void {
     const rule = rulerFile ? rulerFile : `${directory}/architectural-rules.json`
     const files = getFiles(directory).filter(file => file.endsWith(".ts"))
-
     const symbols = parse(files, directory)
-    try {
-        const rules = getRules(rule, files)
-        const report = check(symbols, rules)
-        new Graph(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.graph)
-        new Textual(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.textual)
-        new DSM(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.dsm)
-    }
-    catch (err) {
-        console.log(err)
-        if (err instanceof Error) {
-            console.log((err as Error).message)
-        }
-    }
+    const rules = getRules(rule, files)
+    const report = check(symbols, rules)
+    new Graph(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.graph)
+    new Textual(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.textual)
+    new DSM(report.divergencies, report.convergencies, report.absences, report.alerts).generate(paths.dsm)
 }
